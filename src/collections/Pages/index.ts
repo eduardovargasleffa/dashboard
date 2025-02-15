@@ -20,9 +20,14 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
+import Slider from '@/blocks/Slider'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
+  labels: {
+    singular: 'Página',
+    plural: 'Páginas',
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -37,6 +42,7 @@ export const Pages: CollectionConfig<'pages'> = {
     slug: true,
   },
   admin: {
+    group: 'Website',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) => {
@@ -60,6 +66,7 @@ export const Pages: CollectionConfig<'pages'> = {
   fields: [
     {
       name: 'title',
+      label: 'Título da página',
       type: 'text',
       required: true,
     },
@@ -68,21 +75,22 @@ export const Pages: CollectionConfig<'pages'> = {
       tabs: [
         {
           fields: [hero],
-          label: 'Hero',
+          label: 'Banner',
         },
         {
           fields: [
             {
               name: 'layout',
+              label: 'Layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock],
+              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, Slider],
               required: true,
               admin: {
                 initCollapsed: true,
               },
             },
           ],
-          label: 'Content',
+          label: 'Conteúdo da página',
         },
         {
           name: 'meta',
@@ -115,6 +123,7 @@ export const Pages: CollectionConfig<'pages'> = {
     },
     {
       name: 'publishedAt',
+      label: 'Publicada em',
       type: 'date',
       admin: {
         position: 'sidebar',

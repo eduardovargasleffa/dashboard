@@ -9,6 +9,10 @@ import {
 
 export const Archive: Block = {
   slug: 'archive',
+  labels: {
+    plural: 'Coleções de conteúdos',
+    singular: 'Coleção de conteúdo',
+  },
   interfaceName: 'ArchiveBlock',
   fields: [
     {
@@ -24,19 +28,20 @@ export const Archive: Block = {
           ]
         },
       }),
-      label: 'Intro Content',
+      label: 'Introdução',
     },
     {
       name: 'populateBy',
+      label: 'Preenchido com',
       type: 'select',
       defaultValue: 'collection',
       options: [
         {
-          label: 'Collection',
+          label: 'Coleção de conteúdos',
           value: 'collection',
         },
         {
-          label: 'Individual Selection',
+          label: 'Seleção individual de itens',
           value: 'selection',
         },
       ],
@@ -48,7 +53,7 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'collection',
       },
       defaultValue: 'posts',
-      label: 'Collections To Show',
+      label: 'Coleções para mostrar',
       options: [
         {
           label: 'Posts',
@@ -63,7 +68,7 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'collection',
       },
       hasMany: true,
-      label: 'Categories To Show',
+      label: 'Categorias para mostrar',
       relationTo: 'categories',
     },
     {
@@ -74,7 +79,7 @@ export const Archive: Block = {
         step: 1,
       },
       defaultValue: 10,
-      label: 'Limit',
+      label: 'Limite de itens',
     },
     {
       name: 'selectedDocs',
@@ -83,12 +88,8 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'selection',
       },
       hasMany: true,
-      label: 'Selection',
+      label: 'Seleção',
       relationTo: ['posts'],
     },
   ],
-  labels: {
-    plural: 'Archives',
-    singular: 'Archive',
-  },
 }

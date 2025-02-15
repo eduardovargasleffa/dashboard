@@ -17,22 +17,22 @@ export const hero: Field = {
       name: 'type',
       type: 'select',
       defaultValue: 'lowImpact',
-      label: 'Type',
+      label: 'Tipo de banner',
       options: [
         {
-          label: 'None',
+          label: 'Nenhum',
           value: 'none',
         },
         {
-          label: 'High Impact',
+          label: 'Alto impacto',
           value: 'highImpact',
         },
         {
-          label: 'Medium Impact',
+          label: 'Médio impacto',
           value: 'mediumImpact',
         },
         {
-          label: 'Low Impact',
+          label: 'Baixo impacto',
           value: 'lowImpact',
         },
       ],
@@ -60,6 +60,7 @@ export const hero: Field = {
     }),
     {
       name: 'media',
+      label: 'Imagem',
       type: 'upload',
       admin: {
         condition: (_, { type } = {}) => ['highImpact', 'mediumImpact'].includes(type),

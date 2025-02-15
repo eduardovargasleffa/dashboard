@@ -16,6 +16,13 @@ const dirname = path.dirname(filename)
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  admin: {
+    useAsTitle: 'alt',
+  },
+  labels: {
+    plural: 'Biblioteca da mídias',
+    singular: 'Biblioteca da mídia',
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -25,11 +32,12 @@ export const Media: CollectionConfig = {
   fields: [
     {
       name: 'alt',
+      label: 'Texto alternativo',
       type: 'text',
-      //required: true,
     },
     {
       name: 'caption',
+      label: 'Legenda da imagem',
       type: 'richText',
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
@@ -39,7 +47,6 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
     staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,

@@ -1,18 +1,21 @@
 // storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 
-import sharp from 'sharp' // sharp-import
+import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
-
+import { pt } from 'payload/i18n/pt'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
+import { Tags } from './collections/Tags'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
-import { Footer } from './Footer/config'
-import { Header } from './Header/config'
+import { Footer } from './globals/Footer/config'
+import { Header } from './globals/Header/config'
+import { General } from './globals/General/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
@@ -23,16 +26,22 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     components: {
-      // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below and the import `BeforeLogin` statement on line 15.
+      actions: ['@/components/Actions'],
+      beforeNavLinks: ['@/components/BeforeSidebar'],
       beforeLogin: ['@/components/BeforeLogin'],
-      // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below and the import `BeforeDashboard` statement on line 15.
-      beforeDashboard: ['@/components/BeforeDashboard'],
+      afterLogin: ['@/components/AfterLogin'],
+      graphics: {
+        Icon: '@/graphics/Icon/index.tsx#Icon',
+        Logo: '@/graphics/Logo/index.tsx#Logo',
+      },
+    },
+    avatar: {
+      Component: '@/components/Avatar',
     },
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    dateFormat: 'dd/MM/yyyy',
     user: Users.slug,
     livePreview: {
       breakpoints: [
@@ -57,20 +66,26 @@ export default buildConfig({
       ],
     },
   },
-  // This config helps us configure global or default features that the other editors can inherit
+  i18n: {
+    supportedLanguages: {
+      pt,
+    },
+  },
+  email: resendAdapter({
+    defaultFromAddress: process.env.DEFAULT_EMAIL,
+    defaultFromName: process.env.DEFAULT_NAME,
+    apiKey: process.env.RESEND_API_KEY || '',
+  }),
   editor: defaultLexical,
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [Pages, Posts, Tags, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer],
-  plugins: [
-    ...plugins,
-    // storage-adapter-placeholder
-  ],
+  globals: [Header, General, Footer],
+  plugins: [...plugins],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {

@@ -3,9 +3,9 @@ import React from 'react'
 const BeforeLogin: React.FC = () => {
   return (
     <div>
-      <p>
-        <b>Welcome to your dashboard!</b>
-        {' This is where site admins will log in to manage your website.'}
+      <p className="text-center">
+        <b>Bem-vindo ao seu painel de gerenciamento de conteúdo!</b> Aqui é onde os administradores
+        acessarão para gerenciar os seu site.
       </p>
     </div>
   )

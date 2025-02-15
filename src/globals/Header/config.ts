@@ -1,16 +1,18 @@
 import type { GlobalConfig } from 'payload'
 
 import { link } from '@/fields/link'
-import { revalidateFooter } from './hooks/revalidateFooter'
+import { revalidateHeader } from './hooks/revalidateHeader'
 
-export const Footer: GlobalConfig = {
-  slug: 'footer',
+export const Header: GlobalConfig = {
+  slug: 'header',
+  label: 'Menu',
   access: {
     read: () => true,
   },
   fields: [
     {
       name: 'navItems',
+      label: 'Itens do menu',
       type: 'array',
       fields: [
         link({
@@ -21,12 +23,12 @@ export const Footer: GlobalConfig = {
       admin: {
         initCollapsed: true,
         components: {
-          RowLabel: '@/Footer/RowLabel#RowLabel',
+          RowLabel: '@/globals/Header/RowLabel#RowLabel',
         },
       },
     },
   ],
   hooks: {
-    afterChange: [revalidateFooter],
+    afterChange: [revalidateHeader],
   },
 }

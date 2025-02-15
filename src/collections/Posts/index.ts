@@ -5,8 +5,10 @@ import {
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
+  HTMLConverterFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  lexicalHTML,
 } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '../../access/authenticated'
@@ -26,9 +28,14 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
+import { FormBlock } from '@/blocks/Form/config'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
+  labels: {
+    plural: 'Postagens',
+    singular: 'Postagem',
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -48,11 +55,12 @@ export const Posts: CollectionConfig<'posts'> = {
     },
   },
   admin: {
+    group: 'Blog',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) => {
         const path = generatePreviewPath({
-          slug: typeof data?.slug === 'string' ? data.slug : '',
+          slug: typeof data?.slug === 'string' ? `/blog/${data.slug}` : '',
           collection: 'posts',
           req,
         })
@@ -62,7 +70,7 @@ export const Posts: CollectionConfig<'posts'> = {
     },
     preview: (data, { req }) =>
       generatePreviewPath({
-        slug: typeof data?.slug === 'string' ? data.slug : '',
+        slug: typeof data?.slug === 'string' ? `/blog/${data.slug}` : '',
         collection: 'posts',
         req,
       }),
@@ -71,6 +79,7 @@ export const Posts: CollectionConfig<'posts'> = {
   fields: [
     {
       name: 'title',
+      label: 'Título',
       type: 'text',
       required: true,
     },
@@ -81,35 +90,39 @@ export const Posts: CollectionConfig<'posts'> = {
           fields: [
             {
               name: 'heroImage',
+              label: 'Imagem destacada',
               type: 'upload',
               relationTo: 'media',
             },
             {
               name: 'content',
+              label: false,
               type: 'richText',
               editor: lexicalEditor({
                 features: ({ rootFeatures }) => {
                   return [
                     ...rootFeatures,
-                    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                    BlocksFeature({ blocks: [Banner, Code, MediaBlock] }),
+                    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+                    BlocksFeature({ blocks: [Banner, Code, MediaBlock, FormBlock] }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),
+                    HTMLConverterFeature({}),
                   ]
                 },
               }),
-              label: false,
               required: true,
             },
+            lexicalHTML('content', { name: 'content_html' }),
           ],
-          label: 'Content',
+          label: 'Conteúdo',
         },
         {
           fields: [
             {
               name: 'relatedPosts',
               type: 'relationship',
+              label: 'Postagens relacionadas',
               admin: {
                 position: 'sidebar',
               },
@@ -125,12 +138,23 @@ export const Posts: CollectionConfig<'posts'> = {
             },
             {
               name: 'categories',
+              label: 'Categorias',
+              type: 'relationship',
+              admin: {
+                position: 'sidebar',
+              },
+              hasMany: false,
+              relationTo: 'categories',
+            },
+            {
+              name: 'tags',
+              label: 'Tags',
               type: 'relationship',
               admin: {
                 position: 'sidebar',
               },
               hasMany: true,
-              relationTo: 'categories',
+              relationTo: 'tags',
             },
           ],
           label: 'Meta',
@@ -166,6 +190,7 @@ export const Posts: CollectionConfig<'posts'> = {
     },
     {
       name: 'publishedAt',
+      label: 'Publicado em',
       type: 'date',
       admin: {
         date: {
@@ -186,7 +211,12 @@ export const Posts: CollectionConfig<'posts'> = {
     },
     {
       name: 'authors',
+      label: 'Autores',
       type: 'relationship',
+      // @ts-ignore
+      filterOptions: ({ user }) => {
+        if (user?.role == 'admin' || user?.role == 'author') return user
+      },
       admin: {
         position: 'sidebar',
       },
